@@ -12,12 +12,13 @@
     <Window.Resources>
         <converters:ClientConnectedColorConverter x:Key="ClientConnectedColorConverter" />
         <converters:ClientConnectedDisconnectedTextConverter x:Key="ClientConnectedDisconnectedTextConverter" />
-        
+
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition />
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Button Grid.Row="0" HorizontalAlignment="Center" Margin="5" Padding="3,0,3,0" VerticalAlignment="Center"
                 Foreground="{Binding IsConnected, Converter={StaticResource ClientConnectedColorConverter}}"
@@ -31,6 +32,12 @@
                 <healthCheck:HealthCheckControl/>
             </TabItem>
         </TabControl>
+        <ScrollViewer Grid.Row="2"
+                      Height="80" 
+                      Margin="5" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Auto">
+            <TextBlock Text="Log area (under implementation)" />
+        </ScrollViewer>
 
     </Grid>
 </Window>
