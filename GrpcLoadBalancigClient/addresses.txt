@@ -1,0 +1,2 @@
+﻿localhost:7007
+localhost:7273

@@ -1,0 +1,161 @@
+﻿System.Security.Authentication.AuthenticationException: The remote certificate is invalid according to the validation procedure: RemoteCertificateNameMismatch
+Copilot said:
+Copilot
+The error you're encountering is due to the SSL certificate validation process. 
+When you use 127.0.0.1, the certificate's common name (CN) or subject alternative name (SAN)
+ does not match the IP address, leading to a RemoteCertificateNameMismatch error.
+
+To resolve this, you have a couple of options:
+
+1.Update the Certificate: Ensure that the SSL certificate includes 127.0.0.1 as a SAN.
+ This can be done when generating the certificate. Here's an example of how you might
+ generate a self-signed certificate with 127.0.0.1 included:
+
+ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mycert.key -out mycert.crt -subj "/CN=127.0.0.1" -addext "subjectAltName=IP:127.0.0.1"
+ ```
+
+2. Disable Certificate Validation (for Development Only):
+ If you're in a development environment and can afford to bypass SSL validation, you can disable it.
+ However, this is not recommended for production. Here's how you might do it in C#:
+
+ using Grpc.Net.Client;
+ using System;
+ using System.Net.Http;
+ using System.Net.Security;
+ using System.Security.Cryptography.X509Certificates;
+
+ class Program
+ {
+     static void Main()
+     {
+         var handler = new HttpClientHandler();
+         handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+         var httpClient = new HttpClient(handler);
+         var channel = GrpcChannel.ForAddress("https://127.0.0.1:5001", new GrpcChannelOptions { HttpClient = httpClient });
+
+         var client = new YourGrpcService.YourGrpcServiceClient(channel);
+         var response = client.YourMethod(new YourRequest());
+
+         Console.WriteLine("Response: " + response.Message);
+     }
+ }
+ ```
+
+Use localhost: Since localhost works without issues, you can continue using it for local development. 
+The certificate likely includes localhost as a valid name, which is why it passes validation.
+
+-------------------------
+Switch off certificate checking
+
+Configure the gRPC client to allow unencrypted HTTP/2:
+
+ using Grpc.Net.Client;
+ using System;
+
+ class Program
+ {
+     static void Main()
+     {
+         // Enable support for unencrypted HTTP/2
+         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
+         // Create a channel to the server
+         var channel = GrpcChannel.ForAddress("http://127.0.0.1:5000");
+
+         // Create a client for your gRPC service
+         var client = new YourGrpcService.YourGrpcServiceClient(channel);
+
+         // Call a method on the client
+         var response = client.YourMethod(new YourRequest());
+
+         Console.WriteLine("Response: " + response.Message);
+     }
+ }
+ ```
+ Disable SSL certificate validation:
+  using Grpc.Net.Client;
+ using System;
+ using System.Net.Http;
+
+ class Program
+ {
+     static void Main()
+     {
+         var handler = new HttpClientHandler();
+         handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+         var httpClient = new HttpClient(handler);
+         var channel = GrpcChannel.ForAddress("https://127.0.0.1:5001", new GrpcChannelOptions { HttpClient = httpClient });
+
+         var client = new YourGrpcService.YourGrpcServiceClient(channel);
+         var response = client.YourMethod(new YourRequest());
+
+         Console.WriteLine("Response: " + response.Message);
+     }
+ }
+ ```
+ ------------------------------
+ Config appsettings URL
+ - Server 
+ To configure your gRPC server to run on a remote PC, you need to set the URL in the appsettings.json file to the IP address 
+ or hostname of the remote server along with the port number. Here's an example of how you might do this:
+ 
+ {
+  "Kestrel": {
+    "Endpoints": {
+      "Http": {
+        "Url": "http://0.0.0.0:5000",
+        "Protocols": "Http1AndHttp2"
+      },
+      "gRPC": {
+        "Url": "http://0.0.0.0:5001",
+        "Protocols": "Http2"
+      }
+    }
+  },
+  "AllowedHosts": "*"
+}
+
+In this example:
+ - 0.0.0.0 allows the server to listen on all network interfaces, making it accessible from remote PCs.
+ - 5001 is the port for gRPC communication.
+ 
+ If you want to specify a particular IP address, replace 0.0.0.0 with the actual IP address of the remote server:
+ (but this requires firewall config)
+
+{
+  "Kestrel": {
+    "Endpoints": {
+      "Http": {
+        "Url": "http://192.168.1.100:5000",
+        "Protocols": "Http1AndHttp2"
+      },
+      "gRPC": {
+        "Url": "http://192.168.1.100:5001",
+        "Protocols": "Http2"
+      }
+    }
+  },
+  "AllowedHosts": "*"
+}
+--------------------------------------------
+The "AllowedHosts": "*" setting in the appsettings.json file specifies which hosts are allowed to access your application. 
+The asterisk (*) is a wildcard character that means any host is allowed.
+
+Here's a bit more detail:
+
+Wildcard (*): Allows requests from any host. This is useful during development or when you want to accept requests from multiple domains.
+Specific Hosts: You can also specify particular hosts by listing them, separated by semicolons.
+For example, "AllowedHosts": "example.com;anotherdomain.com" would restrict access to only those domains.
+Using "AllowedHosts": "*" is convenient for development, but in a production environment, it's generally better to specify
+the allowed hosts to enhance security.
+
+In the context of web applications, the "host" refers to the domain name or IP address where your application is running. 
+For example, if your application is
+accessible at http://example.com, then example.com is the host. Similarly, if your application is running on a server 
+with the IP address 192.168.1.100, then 192.168.1.100 is the host.
+
+The "AllowedHosts" setting in appsettings.json specifies which hosts are permitted to make requests to your application.
+This helps control access and can be used to prevent unauthorized domains from interacting with your server.
+--------------------------------------------

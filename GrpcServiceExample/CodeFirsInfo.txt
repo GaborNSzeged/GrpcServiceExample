@@ -1,0 +1,18 @@
+﻿A proto fáljok elérése nehézkes
+Egy .Net-es interface-ből generálja a szükséges fájlokat és nem kell proto fájl
+
+!!! Ez nem microsoft-os megoldás !!!
+
+Server
+nupkg: 
+ - google.Protobuf
+ - probuf-net.grpc
+
+ ServerCallContext -> CallContext: mert közös a kliensen és a serveren.
+
+SharedProject
+	eléri a server és klien
+
+Client
+nupkg:
+ - 

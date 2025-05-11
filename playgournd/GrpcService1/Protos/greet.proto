@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcService1";
+
+package greet;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply);
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings.
+message HelloReply {
+  string message = 1;
+}
+
+message StringList {
+    repeated string values = 1;
+}
+
+message DeleteProductRequest {
+    int32 product_id = 1;
+    map<int32, StringList> my_map = 2;
+    RockPaperScissors game=3;
+}
+
+enum RockPaperScissors{
+    ROCK=0;
+    PAPER=1;
+    SCISSORS=3;
+}
+
+/*
+message FuncitoinNameRequest{
+    oneof response{
+        ActualResponse response =1;
+        error error = 2;
+    }
+}
+*/

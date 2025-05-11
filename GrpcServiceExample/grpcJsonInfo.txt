@@ -1,0 +1,46 @@
+==============================================================
+gRPC-Web (nupkg)
+
+sima HTTP felett mennek a hívások, akkor lehet jó ha a HTTP2 nem támogatott (.Net Framework).
+Borwserben futó alkalmazások esetében vagy Maui, Blazer. A gRPC-Web-et már használható.
+
+Másik opció (a visszfelé kompatibilitásra): 
+A gRPC service elé bekerül egy Json így a kliensek felé nem is látszik.
+
+server oldali csproj fájt kell módosítani
+<IncludeHttpRuleProtos>true</IncludeHttpRuleProtos>
+
+program.cs
+ builder.Service...
+
+ greeting.proto
+ le kell mondani a client streaming és a duplex streaming-ról
+
+ rpc-hez is lehet options-eket rakni nem csak magázoz a proto fáljhoz
+ Ehhez: import "goolge/api/annotation.proto"
+ rpc SayHello(HelloRequest) returns(HellReplay)
+ {
+	option (google.api.http)={
+	get:"/greeter/{name}" ez a hello request-be fog belekerülni
+	}
+ }
+
+ rpc SayHelloServerStreamingí(helloRequestStreaming) return (stream helloReplay){
+	options (google.api.http)={
+		post: "/greeter"
+		body: "*"
+	}
+ }
+
+ app.setting: protocols:Http1AndHttp2
+
+ Client !!! NEM gRPC !!!
+ A https-es url-t használja
+ using var client = new HttpClient();
+
+ string getResp = await client.GetStringAsync(".../greeter/Gabor");
+
+ var postREsp = await clien.PostAsJsnonAsync("https://.../greeter", new )
+
+ // fogadja az egész stream-et
+ string postRespString = await postREsp.Content.ReadAsStringAsync();

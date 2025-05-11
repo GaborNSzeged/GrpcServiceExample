@@ -1,0 +1,9 @@
+{
+  "LoggerConfig": {
+    "ClientName": "Agent1"
+  },
+  "Server": {
+    "Address": "https://192.168.0.17:5001"
+  }
+}
+

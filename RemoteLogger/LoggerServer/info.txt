@@ -1,0 +1,33 @@
+﻿- Make the proto file accessable for the client:
+    appsettings.json
+    "Kestrel": {
+    "EndpointDefaults": {
+      "Protocols": "Http1AndHttp2" // Http1AndHttp2 so the proto be updated by VS (grpc UI így már nem fog működni) http://127.0.0.1:5090/Protos/shop.proto
+    }
+    }
+
+    Program.cs
+	    app.UseStaticFiles(new StaticFileOptions
+    {
+        RequestPath = "/Protos",
+        FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "Protos")),
+        ContentTypeProvider = new FileExtensionContentTypeProvider(new Dictionary<string, string> { { ".proto", "text/plain" } })// key fájl, value=ebben a formában adja vissza.
+    });
+
+- Use DI container:
+   This funciton is in the nupkg: Grpc.AspNetCore
+   
+   var builder = WebApplication.CreateBuilder(args);
+   builder.Services.AddSingleton<IFileHandler, FileHandler>();
+
+- Config
+Set the environment variable in your system or container:
+Bash
+ASPNETCORE_URLS=http://localhost:5000;https://localhost:5001
+
+- How to check what is using a port number
+C:\> netstat -ano | find /i "5001"
+-a – Displays all active connections and the TCP and UDP ports on which the computer is listening.
+-n – Displays active TCP connections and port numbers in numerical form.
+If you would like to free the port, go to Task Manager, sort by PID and close those processes.
+-o – Displays active TCP connections and includes the process ID (PID) for each connection.

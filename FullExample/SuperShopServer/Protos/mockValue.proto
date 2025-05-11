@@ -1,0 +1,22 @@
+syntax = "proto3";
+package mockValue;
+
+option csharp_namespace = "SuperShopServer";
+
+import "google/protobuf/empty.proto";
+
+
+service MockValueSetter {
+	rpc SetMockValue (SetMockValueReques) returns (google.protobuf.Empty);
+}
+
+ enum ValueType {
+    CPU = 0;
+    MEMORY = 1;
+	DISK = 2;
+  }
+
+message SetMockValueReques {
+	ValueType value_type = 1;
+	int32 value = 2;
+}

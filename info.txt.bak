@@ -1,0 +1,20 @@
+Client
+ - AsyncUnaryCall<T> -> inside there is a Task<T>, whic is the ResponseAsync
+   
+    Server sends the data in stream
+ - AsyncServerStreamingCall<T> -> inside there is an ISyncStreamreader<T>, which is the ResponseStream
+ 
+   Client send the data to server in stream
+ - AsyncClientStreamingCall -> RequestStream.WriteAsync
+   Important to close complete the steam an wait for the response, even if it is an Empty
+   await call3.RequestStream.CompleteAsync();
+   await call3.ResponseAsync;
+   
+ - AsyncDuplexStreamingCall
+ 
+ 
+Service
+
+Duplex
+ public override async Task CreateProducts(IAsyncStreamReader<CreateProductRequest> requestStream, IServerStreamWriter<CreateProductResponse> responseStream, ServerCallContext context)
+ 

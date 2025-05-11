@@ -1,0 +1,24 @@
+﻿Ha hagyományos modon küldenénk nagy méretű fájlt, akkor meg kellene növleni a timeOut time-t.
+Cloud, FTP 
+1. kliens jelzi, hogy fájt akar küldeni. 
+2. server kér egy tokent FTP szervertől amit vissza küld a kliensnek
+3. kliens feltolti afz FTP szerverre a token felhasználásával
+4. a szerver leszedi a FTP szerverről.
+
+Vagy darabokban kell küldeni (mi ezt csináljuk)
+Jobb, ha a kliens mondja meg, hogy mekkor chunk-okban legyen a letöltés (request: chunk=4048), felfele eleve a kliens határozza meg.
+Upload: A kliens feldarabolja küldi a servernek (steam)
+Download: A server szintén darabokban küldi vissza (stream)
+
+Szükség lesz valamilyen metadata-ra pl.: FileMetadata
+
+A download requestben soha sem path kell megadni, hanem valami Id-t inkább.
+
+Span unokatestvére Memory: request.Data.Memory ez egy pointer lesz a Data-ra, nincsen felesleges memory allokáció.
+
+Client: UnsafeByteOperations.UnsafeWrap(buffer.AsíMemory(0, count)) => mivel csak pointereket fog tartalmazva az unmutable működés megszűnik (experimental)
+de cserében nincsen dupla allokáció.
+
+
+
+

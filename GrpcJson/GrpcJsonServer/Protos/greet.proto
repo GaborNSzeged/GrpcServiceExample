@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcJsonServer";
+import "google/api/annotations.proto";
+
+package greet;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {
+	  option (google.api.http)={
+		  get: "/greeter/{name}"
+	  };
+  }
+  rpc SayHelloServerStreaming(HelloRequestStreaming) returns (stream HelloReply) {
+	  option (google.api.http)={
+		  post: "/greeter"
+		  body: "*"
+	  };
+  }
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloRequestStreaming {
+  string name = 1;
+  int32 count = 2;
+}
+
+// The response message containing the greetings.
+message HelloReply {
+  string message = 1;
+}

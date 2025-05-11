@@ -1,0 +1,12 @@
+﻿Még akár lokális hálózaton keresztül is működik, de leginkább egy gépen belül processek közötti communikárióra van.
+Nem minden featue működik vele. pl.: load balancing.
+A Kestrel servernek van ez a támogatása nem a gRPC trükkje.
+
+Server
+A http2 protokolt használja továbbra is de nem TCP/IP-n keresztül hanem a named pipe-ot. 
+
+Client
+A channel-t kell configolni
+1. kell egy class a signatúra a fontos mert delegate-nél lesz megadva pl:
+publi NamedPipesConnectionFActory
+ 

@@ -1,0 +1,79 @@
+- Server side interceptor (exception handling)
+builder.Services.AddGrpc(opts =>
+{
+    opts.Interceptors.Add<ErrorHandlingInterceptor>();
+});
+builder.Services.AddTransient<ErrorHandlingInterceptor>();
+builder.Services.AddTransient<IErrorHandler, ErrorHandler>();
+
+- Server side message validation (Calzolari.Grpc.AspNetCore.Validation)
+builder.Services.AddGrpc(opts =>
+{
+    // interceptorral is lehet validálni
+   // opts.Interceptors.Add<EditProductRequestValidatingInterceptor>();
+    opts.EnableMessageValidation();
+});
+builder.Services.AddValidator<EditProductRequestValidator>(); // with the help of fluent validation
+builder.Services.AddGrpcValidation();
+
+- Object to Object mappng (AutoMapper)
+builder.Services.AddAutoMapper(typeof(MarkerProfile));
+
+- Authentation, Authorization (Microsoft.AspNetCore.Authentication.JwtBearer)
+builder.Services.AddTransient<IUserInfoProvider, JwtTokenBasedUserInfoProvider>(); // used in the BLL ProductService
+builder.Services.AddSingleton<IAuthorizationHandler, AdultAuthorizationHandler>();
+builder.Services.AddAuthentication(opts =>
+{
+    opts.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opts.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(opts =>
+{
+    opts.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("someverysupersecretspecialpassword"))
+    };
+});
+builder.Services.AddAuthorization(opts =>
+{
+    opts.AddPolicy("adminUser", builder => builder.RequireRole("admin"));
+    opts.AddPolicy("akosPolicy", builder => builder.RequireUserName("Akos"));
+    opts.AddPolicy("authenticated", builder => builder.RequireAuthenticatedUser());
+    opts.AddPolicy("claimValue", builder => builder.RequireClaim("customClaim", "customValue"));
+    //opts.AddPolicy("adultPolicy", builder => builder.RequireAssertion(ctx =>
+    //{
+    //    var claimValue = ctx.User.Claims.Single(c => c.Type == "http://schemas.semilab.hu/dateofbirth").Value;
+    //    DateTime dob = DateTime.Parse(claimValue);
+    //    return (DateTime.Now - dob) > TimeSpan.FromDays(18 * 365);
+    //}));
+    opts.AddPolicy("adultPolicy", builder => builder.AddRequirements(new AdultAuthorizationRequirement()));
+});
+
+Create token:
+app.MapGet("/token", async context =>
+{....
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+in service class
+ [Authorize(Policy = "adultPolicy")]
+ public override async Task GetDrinks
+
+
+FluentValidation
+ - It can validate e.g. request. 
+     RuleFor(request => request.CategoryId).GreaterThanOrEqualTo(1).LessThanOrEqualTo(8).WithMessage("Invalid category");
+  For example: 
+    - Create a interceptor
+    - in the interceptor
+        EditProductRequestValidator : AbstractValidator<EditProductRequest>
+        ValidationResult validationResult = await validator.ValidateAsync(editProductRequest);
+         if (!validationResult.IsValid)
+
+Client streaming validation:
+ValidatingAsyncStreamReader<TRequest> : IAsyncStreamReader<TRequest>
+ and in the move next we can get the request and validate the the fluent validation.
