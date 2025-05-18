@@ -12,9 +12,11 @@ namespace GrpsOverAllExamplesClients.Ui.HealthCheck
     {
         private bool _continuousHealthCheckIsRunning;
         private ISuperShopClientService? _superShopClientService;
+        private LocalLogger _localLoger;
 
         public HealthCheckControlViewModel()
         {
+            _localLoger = LocalLogger.Logger;
             CheckHealthCheckCommand = new RelayCommand(ExecuteCheckHealthCheckCommand, CanExecuteCheckHealthCheckCommand);
             ClearLogCommand = new RelayCommand(ExecuteClearLogCommand, null);
             StartContinuousHealtCheckCommand = new RelayCommand(ExecuteStartContinuousHealtCheckCommand, null);
@@ -80,12 +82,20 @@ namespace GrpsOverAllExamplesClients.Ui.HealthCheck
             _continuousHealthCheckIsRunning = false;
         }
 
-        private void ExecuteSetServerMockValueCommand(object? obj)
+        private async void ExecuteSetServerMockValueCommand(object? obj)
         {
             var superShopClient = GetSuperShopService();
-            superShopClient.SetMockValue(SelectedHealtCheckTypeToServerMock, SelectedValueToServerMock);
+            try
+            {
+                await superShopClient.SetMockValue(SelectedHealtCheckTypeToServerMock, SelectedValueToServerMock);
+                _localLoger.Log($"Mock value sent: {SelectedHealtCheckTypeToServerMock} {SelectedValueToServerMock}");
+            }
+            catch (Exception ex)
+            {
+                _localLoger.Log($"Could not send mock value to server: {ex.Message}");
+            }
         }
-       
+
         private ISuperShopClientService GetSuperShopService()
         {
             if (_superShopClientService == null)
@@ -100,8 +110,15 @@ namespace GrpsOverAllExamplesClients.Ui.HealthCheck
         {
             var superShopClient = GetSuperShopService();
 
-            string healtCheckResult = await superShopClient.GetInstantHealtCheck(SelectedHealtCheckTypeToTest);
-            InstantHealtCheckResult = $"{DateTime.Now.ToString("mm:ss")}:  {healtCheckResult}";
+            try
+            {
+                string healtCheckResult = await superShopClient.GetInstantHealtCheck(SelectedHealtCheckTypeToTest);
+                InstantHealtCheckResult = $"{DateTime.Now.ToString("mm:ss")}:  {healtCheckResult}";
+            }
+            catch (Exception ex)
+            {
+                _localLoger.Log($"Could not refresh Healt Check: {ex.Message}");
+            }
         }
 
         private void StartContinousHealtCheck()
@@ -112,8 +129,15 @@ namespace GrpsOverAllExamplesClients.Ui.HealthCheck
             }
             var superShopClient = GetSuperShopService();
 
-            _continuousHealthCheckIsRunning = true;
-            superShopClient.StartContinousHelathCheck(RefreshHealthCheckLog);
+            try
+            {
+                superShopClient.StartContinousHelathCheck(RefreshHealthCheckLog);
+                _continuousHealthCheckIsRunning = true;
+            }
+            catch (Exception ex)
+            {
+                _localLoger.Log($"Could not start continous healt check. {ex.Message}");
+            }
         }
 
         private void RefreshHealthCheckLog(string statusLog)
