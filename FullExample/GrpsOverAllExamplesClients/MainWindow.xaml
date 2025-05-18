@@ -36,7 +36,7 @@
                       Height="80" 
                       Margin="5" VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Auto">
-            <TextBlock Text="Log area (under implementation)" />
+            <TextBlock Text="{Binding LogContent}" />
         </ScrollViewer>
 
     </Grid>

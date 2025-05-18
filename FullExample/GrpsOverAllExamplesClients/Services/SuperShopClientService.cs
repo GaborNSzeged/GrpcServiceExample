@@ -3,6 +3,7 @@ using Grpc.Health.V1;
 using Grpc.Net.Client;
 using GrpsOverAllExamplesClients.Enums;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using SuperShopServer;
 using System.ComponentModel;
 using System.Threading.Channels;
@@ -18,6 +19,7 @@ namespace GrpsOverAllExamplesClients.Services
         private MockValueSetter.MockValueSetterClient? _mockValueSetterclient;
         private bool disposedValue;
         private bool _serviceStarted;
+        private LocalLogger _localLogger;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -25,6 +27,7 @@ namespace GrpsOverAllExamplesClients.Services
         {
             // Logger = loggerFactory.CreateLogger<SuperShopClientService>();
             //  Logger.LogInformation($"{nameof(SuperShopClientService)} created");
+            _localLogger = LocalLogger.Logger;
         }
 
         public bool ServiceStarted
@@ -33,6 +36,8 @@ namespace GrpsOverAllExamplesClients.Services
             set
             {
                 _serviceStarted = value;
+                string logMsg = _serviceStarted ? "Client started" : "Client stopped";
+                _localLogger.Log(logMsg);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ServiceStarted)));
             }
         }
@@ -68,9 +73,9 @@ namespace GrpsOverAllExamplesClients.Services
         //  public ILogger Logger { get; }
 
 
-        public async void SetMockValue(ServiceHealthTypes healthType, int value)
+        public async Task SetMockValue(ServiceHealthTypes healthType, int value)
         {
-            MockValueSetter.MockValueSetterClient client = GetMockValueSetterClient();
+            MockValueSetter.MockValueSetterClient client = GetMockValueSetterClient() ?? throw new Exception("Mock value setter client cannot be created.");
             SuperShopServer.ValueType valueType = SuperShopServer.ValueType.Cpu;
 
             if (healthType == ServiceHealthTypes.Disk)
@@ -91,7 +96,7 @@ namespace GrpsOverAllExamplesClients.Services
         {
             // Logger.LogInformation($"{nameof(SuperShopClientService)}.GetInstantHealtCheck()");
 
-            Health.HealthClient client = GetHealthCheckClient();
+            Health.HealthClient client = GetHealthCheckClient() ?? throw new Exception("Healt check client cannot be created.");
 
             // This solution is good if you wan to get the health check only once.
             HealthCheckResponse resp;
@@ -109,7 +114,8 @@ namespace GrpsOverAllExamplesClients.Services
 
         public void StartContinousHelathCheck(Action<string> logger)
         {
-            Health.HealthClient client = GetHealthCheckClient();
+            Health.HealthClient client = GetHealthCheckClient() ?? throw new Exception("Healt check client cannot be created.");
+
             _continuousHelathCheckCts = new CancellationTokenSource();
             _continuousHealthCheckWatchCall = client.Watch(new HealthCheckRequest(), cancellationToken: _continuousHelathCheckCts.Token);
             var watchTask = Task.Run(async () =>
@@ -138,18 +144,18 @@ namespace GrpsOverAllExamplesClients.Services
             _continuousHealthCheckWatchCall?.Dispose();
         }
 
-        private Health.HealthClient GetHealthCheckClient()
+        private Health.HealthClient? GetHealthCheckClient()
         {
-            if (_healthClient == null)
+            if (_healthClient == null && _channel != null)
             {
                 _healthClient = new Health.HealthClient(_channel);
             }
             return _healthClient;
         }
 
-        private MockValueSetter.MockValueSetterClient GetMockValueSetterClient()
+        private MockValueSetter.MockValueSetterClient? GetMockValueSetterClient()
         {
-            if (_mockValueSetterclient == null)
+            if (_mockValueSetterclient == null && _channel != null)
             {
                 _mockValueSetterclient = new MockValueSetter.MockValueSetterClient(_channel);
             }
@@ -164,6 +170,9 @@ namespace GrpsOverAllExamplesClients.Services
                 {
                     // TODO: dispose managed state (managed objects)
                     _channel?.Dispose();
+                    _channel = null;
+                    _healthClient = null;
+                    _mockValueSetterclient = null;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

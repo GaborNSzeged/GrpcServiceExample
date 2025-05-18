@@ -11,12 +11,17 @@ namespace GrpsOverAllExamplesClients
     internal class MainWindowViewModel : BaseViewModel
     {
         private ISuperShopClientService? _superShopClientService;
+        private LocalLogger _localLogger;
 
         public MainWindowViewModel()
         {
             ConnectCommand = new RelayCommand(ExecuteConnectCommnad, null);
             GetSuperShopService().PropertyChanged += HandleSuperShopClientPropertyChanged;
+            _localLogger = LocalLogger.Logger;
+            _localLogger.PropertyChanged += HandleLogerPropertyChanged;
         }
+
+        public string LogContent => _localLogger.LogContent;
 
         public bool IsConnected
         {
@@ -43,6 +48,14 @@ namespace GrpsOverAllExamplesClients
             if (e.PropertyName == nameof(ISuperShopClientService.ServiceStarted))
             {
                 OnPropertyChanged(nameof(IsConnected));
+            }
+        }
+
+        private void HandleLogerPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(LocalLogger.LogContent))
+            {
+                OnPropertyChanged(nameof(LogContent));
             }
         }
 
