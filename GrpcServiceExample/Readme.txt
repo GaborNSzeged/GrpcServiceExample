@@ -1,5 +1,7 @@
-TODO
- - create useful HealthCheck. Why don't I got Degraded status?
+﻿TODO
+- Authentication
+Check what does the CallCredentials.FromInterceptor do on the client side.
+ activate the validation in the BlL
 ======================================================================================================================================
 - Client (gRPC)
     install: Grpc.Net.Client -> for Creating the channel
@@ -18,7 +20,7 @@ TODO
 ======================================================================================================================================
 - Health Check
     (only status Healty or Unhealty is reported to the client, Degraded -> Healthy)
-    Server
+    ** Server **
     Install: Grpc.AspNetCore.HealthChecks.nupkg
 
      If an app has been configured to require authorization by default, configure the gRPC health checks endpoint with AllowAnonymous
@@ -54,7 +56,7 @@ builder.Services.Configure<HealthCheckPublisherOptions>(options =>
     - Register the service
     app.MapGrpcHealthChecksService();
 
-    Client
+    ** Client **
     Inslall: Grpc.HealthCheck.nupkg
     Health.HealthClient client = new Health.HealthClient(channel);
 
@@ -73,7 +75,7 @@ var watchTask = Task.Run(async () =>
     {
         await foreach (var message in watchCall.ResponseStream.ReadAllAsync())
         {
-            // ide csak akkor j�v�nk, ha v�ltoz�s t�rt�nt a server oldalon
+            // ide csak akkor jövünk, ha változás történt a server oldalon
             Console.WriteLine("Health of the server: " + message.Status);
         }
     }
@@ -90,4 +92,91 @@ var watchTask = Task.Run(async () =>
 
     Server:
     It comes with gRPC packagtes
+======================================================================================================================================
+- Authentication
+    ** Server **
+    Install: Microsoft.IdentityModel.JsonWebTokens -> used for creating the requested token
+             System.IdentityModel.Tokens.Jwt -> used for creating the requested token
+             Microsoft.AspNetCore.Authentication.JwtBearer -> contains the service
+
+ To send a get/post authenticatin reques to the server http1 must be enabled.
+ "EndpointDefaults": {
+      "Protocols": "Http1AndHttp2"
+    },
+
+   app.MapPost("/token", async context =>
+{
+    var body = context.Request.Body;
+    using var reader = new StreamReader(body);
+    var requestBody = await reader.ReadToEndAsync();
+    var userCredentials = JsonSerializer.Deserialize<UserCredentials>(requestBody);
+
+    User? user = MemoryDb.GetUser(userCredentials);
+    string tokenString = user != null ? TokenManger.CreateTokenString(user) : string.Empty;
+    await context.Response.WriteAsync(tokenString);
+
+});
+
+app.MapGet("/token", async context =>
+{
+    User? user = MemoryDb.GetUser(new UserCredentials { Username = "Name", Password = "psw" });
+    string tokenString = user != null ? TokenManger.CreateTokenString(user) : string.Empty;
+    await context.Response.WriteAsync(tokenString);
+});
+
+// just right before the services wich requers the authentictions
+app.UseAuthentication();
+app.UseAuthorization();
+
+    ** Client **
+    The channel is atuhenticated.
+                string token = await GetToken2(userName, password);
+                string token = await GetToken();
+
+               
+                CallCredentials credentials = CallCredentials.FromInterceptor(interceptor: async (context, metadata) =>
+                {
+                    // azt a felhaználót validáljuk aki a tokennel rendelkezik
+                    // akkor hívódik meg amikor a call el van kérve a client-től
+                    metadata.Add("Authorization", $"Bearer {token}");
+                });
+
+                // The previously requested token is used in the channel
+                // Interceptor segítségével fogja a hívásokhoz hozzárakni a tokent.
+                _channel = GrpcChannel.ForAddress(GetServerAddress(), new GrpcChannelOptions
+                {
+                    Credentials = ChannelCredentials.Create(new SslCredentials(), credentials),
+                });
+                ServiceStarted = true;
+                _localLogger.Log($"Connected to server: {Address}");
+
+        // Get request
+        private async Task<string> GetToken()
+        {
+            // uses only HTTP to get the token
+            using HttpClient client = new HttpClient();
+            string address = $"{GetServerAddress()}/token";
+            return await client.GetStringAsync(address);
+        }
+
+        // Post request
+        private async Task<string> GetToken2(string username, string password)
+        {
+            using HttpClient client = new HttpClient();
+
+            // Create the request payload
+            var credentials = new { Username = username, Password = password };
+            var jsonPayload = JsonSerializer.Serialize(credentials);
+            var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+            // Send the POST request
+            HttpResponseMessage response = await client.PostAsync($"{GetServerAddress()}/token", content);
+
+            // Ensure the response is successful
+            response.EnsureSuccessStatusCode();
+
+            // Read and return the token from the response body
+            return await response.Content.ReadAsStringAsync();
+        }
+
 ======================================================================================================================================

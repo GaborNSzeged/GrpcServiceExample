@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.IO.Pipes;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace LoggerProxy
 {
@@ -18,24 +19,27 @@ namespace LoggerProxy
         private readonly StreamWriter _writer;
 
         // Replace with the actual server address.
-        private const string ServerIp = "172.22.144.60:5001";
-        private bool _keepOrigServerIp = true;
+        private const string ServerIp = "172.22.144.60:5002";
+        private readonly bool _keepOrigServerIp = true;
+        private static bool _isStarted;
 
         static Proxy()
         {
             Instance = new Proxy(true);
         }
 
-        //public static void Init()
-        //{
-        //}
-
         public static void Log(string fileName, string content)
         {
+            if (!_isStarted)
+            {
+                Thread.Sleep(5000);
+                _isStarted = true;
+            }
+
             Instance.Inst_Log(fileName, content);
         }
 
-        public Proxy(bool remoteLogging)
+        private Proxy(bool remoteLogging)
         {
             _useRemoteLogging = remoteLogging;
 

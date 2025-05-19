@@ -21,7 +21,7 @@ static string GetServerAddress()
 string token = await GetToken();
 CallCredentials credentials = CallCredentials.FromInterceptor(async (context, metadata) =>
 {
-    // azt a felhaználól validáljuk aki a tokennel rendelkezik
+    // azt a felhaználót validáljuk aki a tokennel rendelkezik
     // akkor hívódik meg amikor a call el van kérve a client-től
     metadata.Add("Authorization", $"Bearer {token}");
 });

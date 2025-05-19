@@ -4,16 +4,16 @@ namespace LoggerClient
 {
     internal class PipeServer
     {
-        private string _masterProessId = string.Empty;
+        private string _masterProcessId = string.Empty;
 
         internal void Start(string masterProcessId)
         {
             Console.WriteLine($"Started by process id value: {masterProcessId}");
-            _masterProessId = masterProcessId;
+            _masterProcessId = masterProcessId;
 
             using var client = LoggerClient.Instance;
 
-            using (NamedPipeServerStream pipeServer = new NamedPipeServerStream("LoggerPipe", PipeDirection.In))
+            using (var pipeServer = new NamedPipeServerStream("LoggerPipe", PipeDirection.In))
             {
                 while (true)
                 {
@@ -22,37 +22,37 @@ namespace LoggerClient
                         Console.WriteLine("Waiting for messages...");
                         pipeServer.WaitForConnection();
 
-                        string[] receivedValues = new string[3];
-                        using (var reader = new StreamReader(pipeServer))
+                        var receivedValues = new string[3];
+                        var paramCounter = 0;
+                        using var reader = new StreamReader(pipeServer);
+
+                        while (reader.ReadLine() is { } message)
                         {
-                            int paramCounter = 0;
-                            string? message;
-                            while ((message = reader.ReadLine()) != null)
+                            receivedValues[paramCounter++] = message;
+                            if (paramCounter != 3)
                             {
-                                receivedValues[paramCounter++] = message;
-                                if (paramCounter != 3)
-                                {
-                                    Console.WriteLine($"Received: {message}");
-                                }
-
-                                if (paramCounter == 3)
-                                {
-                                    string callerProcessId = receivedValues[0];
-
-                                    if (callerProcessId != _masterProessId)
-                                    {
-                                        break;
-                                    }
-
-                                    string fileName = receivedValues[1];
-                                    string content = receivedValues[2];
-
-                                    client.SendContent(fileName, content);
-                                    paramCounter = 0;
-                                }
+                                Console.WriteLine($"Received: {message}");
                             }
-                            break;
+
+                            if (paramCounter != 3)
+                            {
+                                continue;
+                            }
+
+                            string callerProcessId = receivedValues[0];
+
+                            if (callerProcessId != _masterProcessId)
+                            {
+                                break;
+                            }
+
+                            string fileName = receivedValues[1];
+                            string content = receivedValues[2];
+
+                            client.SendContent(fileName, content);
+                            paramCounter = 0;
                         }
+                        break;
                     }
                     catch (Exception ex)
                     {

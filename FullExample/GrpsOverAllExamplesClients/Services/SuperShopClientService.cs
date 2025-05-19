@@ -2,11 +2,13 @@
 using Grpc.Health.V1;
 using Grpc.Net.Client;
 using GrpsOverAllExamplesClients.Enums;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using SuperShopServer;
 using System.ComponentModel;
-using System.Threading.Channels;
+using System.Net.Http;
+using System.Text.Json;
+using System.Text;
+using System.Web;
+using System.Xml.Linq;
 
 namespace GrpsOverAllExamplesClients.Services
 {
@@ -42,31 +44,85 @@ namespace GrpsOverAllExamplesClients.Services
             }
         }
 
+        public string Address { get; } = "https://localhost:5006";
+
         public bool Start()
         {
             if (_serviceStarted)
             {
                 return true;
             }
+
             try
             {
-                string address = "https://localhost:5006";
-                _channel = GrpcChannel.ForAddress(address);
+                _channel = GrpcChannel.ForAddress(Address);
                 // Logger.LogInformation($"{nameof(SuperShopClientService)} started with url address: {address}");
                 ServiceStarted = true;
+                _localLogger.Log($"Connected to server: {Address}");
             }
             catch (Exception ex)
             {
                 // Logger.LogInformation(ex.ToString());
+                _localLogger.Log($"Cannot onnect to {Address}: {ex}");
                 return false;
             }
 
             return true;
         }
 
+        public async Task<string> RegisterNewUser(string userName, string userPsw)
+        {
+            var queryParams = HttpUtility.ParseQueryString(string.Empty);
+            queryParams["user"] = userName;
+            queryParams["id"] = userPsw;
+
+            // uses only HTTP to get the token
+            using HttpClient client = new HttpClient();
+            string address = $"{GetServerAddress()}/register?{queryParams}";
+            return await client.GetStringAsync(address);
+        }
+
+        public async Task DisconnectAndReconnectWithAuthentication(string userName, string password)
+        {
+            Stop();
+
+            try
+            {
+                string token = await GetTokenPost(userName, password);
+                if (string.IsNullOrEmpty(token))
+                {
+                    _localLogger.Log("Login failed, user or passwork was not correct.");
+                    return;
+                }
+                //string token = await GetToken();
+
+                // TODO is it necessary the async?
+                CallCredentials credentials = CallCredentials.FromInterceptor(interceptor: async (context, metadata) =>
+                {
+                    // azt a felhaználót validáljuk aki a tokennel rendelkezik
+                    // akkor hívódik meg amikor a call el van kérve a client-től
+                    metadata.Add("Authorization", $"Bearer {token}");
+                });
+
+                // The previously requested token is used in the channel
+                // Interceptor segítségével fogja a hívásokhoz hozzárakni a tokent.
+                _channel = GrpcChannel.ForAddress(GetServerAddress(), new GrpcChannelOptions
+                {
+                    Credentials = ChannelCredentials.Create(new SslCredentials(), credentials),
+                });
+                ServiceStarted = true;
+                _localLogger.Log($"Connected to server: {Address}, User: {userName}");
+            }
+            catch (Exception ex)
+            {
+                _localLogger.Log($"Cannot onnect with user/psw to {Address}: {ex}");
+            }
+        }
+
         public void Stop()
         {
             ServiceStarted = false;
+            _localLogger.Log("Client disconnected");
             Dispose();
         }
 
@@ -193,6 +249,38 @@ namespace GrpsOverAllExamplesClients.Services
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        private string GetServerAddress()
+        {
+            return Address;
+        }
+
+        private async Task<string> GetTokenGet()
+        {
+            // uses only HTTP to get the token
+            using HttpClient client = new HttpClient();
+            string address = $"{GetServerAddress()}/token";
+            return await client.GetStringAsync(address);
+        }
+
+        private async Task<string> GetTokenPost(string username, string password)
+        {
+            using HttpClient client = new HttpClient();
+
+            // Create the request payload
+            var credentials = new { Username = username, Password = password };
+            var jsonPayload = JsonSerializer.Serialize(credentials);
+            var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+            // Send the POST request
+            HttpResponseMessage response = await client.PostAsync($"{GetServerAddress()}/token", content);
+
+            // Ensure the response is successful
+            response.EnsureSuccessStatusCode();
+
+            // Read and return the token from the response body
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }
