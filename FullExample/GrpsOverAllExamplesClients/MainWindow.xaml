@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GrpsOverAllExamplesClients"
         xmlns:healthCheck="clr-namespace:GrpsOverAllExamplesClients.Ui.HealthCheck"
+        xmlns:authentication="clr-namespace:GrpsOverAllExamplesClients.Ui.Authentication"
         xmlns:converters="clr-namespace:GrpsOverAllExamplesClients.Converters"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
@@ -24,12 +25,15 @@
                 Foreground="{Binding IsConnected, Converter={StaticResource ClientConnectedColorConverter}}"
                 Content="{Binding IsConnected, Converter={StaticResource ClientConnectedDisconnectedTextConverter}}" 
                 Command="{Binding ConnectCommand}"/>
-        <TabControl Grid.Row="1">
-            <TabItem Header="SuperShop">
-
+        <TabControl Grid.Row="1">            
+            <TabItem Header="Authentication">
+                <authentication:AuthenticationControl/>
             </TabItem>
             <TabItem Header="HealthCheck">
                 <healthCheck:HealthCheckControl/>
+            </TabItem>
+            <TabItem Header="SuperShop">
+                <TextBlock Text="Under Construction"/>
             </TabItem>
         </TabControl>
         <ScrollViewer Grid.Row="2"

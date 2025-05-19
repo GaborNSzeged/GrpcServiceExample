@@ -11,13 +11,14 @@
     <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MBD_2\SemiSoft\Solutions\MBD_Layering\LayeringAnalysis\LayeringAnalysis.csproj" />
-    <ProjectReference Include="..\..\MBD_2\SemiSoft\Solutions\MBD_Layering\MBD.DTO\MBD.DTO.csproj" />
-    <ProjectReference Include="..\..\MBD_2\SemiSoft\Modules\Measurement\MBDCommon\MBDCommon.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="CenterSpace.NMath.Standard.Windows.X64" Version="7.4.1.11" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\MBD\SemiSoft\Modules\Measurement\MBDCommon\MBDCommon.csproj" />
+    <ProjectReference Include="..\..\..\..\MBD\SemiSoft\Solutions\MBD_Layering\LayeringAnalysis\LayeringAnalysis.csproj" />
+    <ProjectReference Include="..\..\..\..\MBD\SemiSoft\Solutions\MBD_Layering\MBD.DTO\MBD.DTO.csproj" />
+    <ProjectReference Include="..\LoggerProxy\LoggerProxy.csproj" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="GrpsOverAllExamplesClients.Ui.Authentication.AuthenticationControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GrpsOverAllExamplesClients.Ui.Authentication"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance local:AuthenticationControlViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Grid.Row="0" Header="New User" Margin="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:" Margin="3"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="3"
+                         Text="{Binding NewUserName}"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Password:" Margin="3"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="3"
+                         Text="{Binding NewUserPsw}"/>
+                <Button Grid.Row="1" Grid.Column="2" Content="Register" Margin="15,3,0,3"
+                        Command="{Binding RegisterCommad}"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="1" Header="Registered User" Margin="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:" Margin="3"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="3"
+                         Text="{Binding OldUserName}"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Password:" />
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="3"
+                         Text="{Binding OldUserPsw}"/>
+                <Button Grid.Row="1" Grid.Column="2" Content="Login" Margin="15,3,0,3"
+                         Command="{Binding LoginCommad}" />
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>

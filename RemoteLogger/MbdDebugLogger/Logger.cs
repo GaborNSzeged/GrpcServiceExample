@@ -92,10 +92,11 @@ namespace MbdDebugLogger
             Save(sb, filePath, appendLine);
         }
 
-        public static void Print(ISectionLayer[] sectionLayers, string extraMarker = "")
+        public static void Print(ISectionLayer[] sectionLayers, bool isRemote, string extraMarker = "")
         {
             string ending = string.IsNullOrEmpty(extraMarker) ? string.Empty : $"_{extraMarker}";
-            string filePath = Path.Combine(DirectoryPath, $"SectionLayer_{ending}.txt");
+            string fileName = $"SectionLayer{ending}.txt";
+            string filePath = Path.Combine(DirectoryPath, fileName);
             bool appendLine = File.Exists(filePath);
             int counter = GetNextCount(filePath, appendLine);
 
@@ -123,7 +124,14 @@ namespace MbdDebugLogger
                 }
             }
 
-            Save(sb, filePath, appendLine);
+            if (isRemote)
+            {
+                LoggerProxy.Proxy.Log(fileName, sb.ToString());
+            }
+            else
+            {
+                Save(sb, filePath, appendLine);
+            }
         }
 
         public static void Print(List<double> doubleComplexMatrix, string extraMarker)
