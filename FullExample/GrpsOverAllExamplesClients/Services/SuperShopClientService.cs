@@ -1,4 +1,4 @@
-﻿using Grpc.Core;
+using Grpc.Core;
 using Grpc.Health.V1;
 using Grpc.Net.Client;
 using GrpsOverAllExamplesClients.Enums;
