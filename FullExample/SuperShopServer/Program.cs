@@ -153,18 +153,31 @@ app.MapPost("/token", async context =>
     var requestBody = await reader.ReadToEndAsync();
     var userCredentials = JsonSerializer.Deserialize<UserCredentials>(requestBody);
 
-    User? user = MemoryDb.GetUser(userCredentials);
-    string tokenString = user != null ? TokenManger.CreateTokenString(user) : string.Empty;
-    await context.Response.WriteAsync(tokenString);
-
+    User? user = MemoryDb.GetUser(userCredentials, out string error);
+    if (user == null)
+    {
+        await context.Response.WriteAsync($"error: {error}");
+    }
+    else
+    {
+        string tokenString = TokenManger.CreateTokenString(user);
+        await context.Response.WriteAsync(tokenString);
+    }
 });
 
 // not used just a Get example
 app.MapGet("/token", async context =>
 {
-    User? user = MemoryDb.GetUser(new UserCredentials { Username = "Name", Password = "psw" });
-    string tokenString = user != null ? TokenManger.CreateTokenString(user) : string.Empty;
-    await context.Response.WriteAsync(tokenString);
+    User? user = MemoryDb.GetUser(new UserCredentials { Username = "Name", Password = "psw" }, out string error);
+    if (user == null)
+    {
+        await context.Response.WriteAsync($"error: {error}");
+    }
+    else
+    {
+        string tokenString = TokenManger.CreateTokenString(user);
+        await context.Response.WriteAsync(tokenString);
+    }
 });
 
 app.MapGet("/register", async context =>
@@ -173,7 +186,7 @@ app.MapGet("/register", async context =>
     string? userName = queryParams["user"];
     string? userPsw = queryParams["id"];
     string result;
-   
+
     if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(userPsw))
     {
         result = "Name or psw cannot be empty";
