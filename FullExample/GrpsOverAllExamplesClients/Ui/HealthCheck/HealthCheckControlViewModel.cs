@@ -117,6 +117,7 @@ namespace GrpsOverAllExamplesClients.Ui.HealthCheck
             }
             catch (Exception ex)
             {
+                InstantHealtCheckResult = $"{DateTime.Now.ToString("mm:ss")}:  --- ";
                 _localLoger.Log($"Could not refresh Healt Check: {ex.Message}");
             }
         }

@@ -1,6 +1,6 @@
 ﻿TODO
+- Create the SuperShop server and UI for it
 - Authentication
-Check what does the CallCredentials.FromInterceptor do on the client side.
  activate the validation in the BlL
 ======================================================================================================================================
 - Client (gRPC)

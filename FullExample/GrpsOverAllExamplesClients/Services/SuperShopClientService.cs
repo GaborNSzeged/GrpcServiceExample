@@ -1,4 +1,4 @@
-﻿using Grpc.Core;
+using Grpc.Core;
 using Grpc.Health.V1;
 using Grpc.Net.Client;
 using GrpsOverAllExamplesClients.Enums;
@@ -48,7 +48,7 @@ namespace GrpsOverAllExamplesClients.Services
 
         public bool Start()
         {
-            if (_serviceStarted)
+            if (ServiceStarted)
             {
                 return true;
             }
@@ -88,19 +88,29 @@ namespace GrpsOverAllExamplesClients.Services
 
             try
             {
+                //string token = await GetToken();
                 string token = await GetTokenPost(userName, password);
+
                 if (string.IsNullOrEmpty(token))
                 {
                     _localLogger.Log("Login failed, user or passwork was not correct.");
                     return;
                 }
-                //string token = await GetToken();
 
-                // TODO is it necessary the async?
+                if (token.StartsWith("error"))
+                {
+                    _localLogger.Log($"Login failed: {token}");
+                    return;
+                }
+
                 CallCredentials credentials = CallCredentials.FromInterceptor(interceptor: async (context, metadata) =>
                 {
+                    // The token could be asked here to get a fresh token for every call.
+                    //string token = await GetTokenPost(userName, password);
+
                     // azt a felhaználót validáljuk aki a tokennel rendelkezik
-                    // akkor hívódik meg amikor a call el van kérve a client-től
+                    // akkor hívódik meg amikor a call el van kérve a client-től,
+                    // amikor a channel felépűl nem.
                     metadata.Add("Authorization", $"Bearer {token}");
                 });
 
@@ -115,7 +125,7 @@ namespace GrpsOverAllExamplesClients.Services
             }
             catch (Exception ex)
             {
-                _localLogger.Log($"Cannot onnect with user/psw to {Address}: {ex}");
+                _localLogger.Log($"Cannot connect with user/psw to {Address}: {ex}");
             }
         }
 
@@ -220,8 +230,8 @@ namespace GrpsOverAllExamplesClients.Services
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
-            {
+            //if (!disposedValue)
+            //{
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects)
@@ -229,12 +239,13 @@ namespace GrpsOverAllExamplesClients.Services
                     _channel = null;
                     _healthClient = null;
                     _mockValueSetterclient = null;
+                    ServiceStarted = false;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
                 // TODO: set large fields to null
                 disposedValue = true;
-            }
+            //}
         }
 
         // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
