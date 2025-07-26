@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+
+  <PropertyGroup>
+    <LatestNMath>true</LatestNMath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(LatestNMath)' == 'true'">
+    <DefineConstants>$(DefineConstants);IsLatesNMath</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Condition="'$(LatestNMath)' == 'false'" Include="CenterSpace.NMath.Standard.Windows.X64" Version="7.4.1.11" />
+    <PackageReference Condition="'$(LatestNMath)' == 'true'" Include="CenterSpace.NMath.Standard.Windows.X64" Version="7.4.2.3" />
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit.Analyzers" Version="3.9.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="NUnit.Framework" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestResources\RightEigenVectors_7_4_1_11.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestResources\RightEigenVectors_7_4_3_2.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestResources\InputDoubleComplex.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

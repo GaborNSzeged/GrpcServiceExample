@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+  <PropertyGroup>
+    <!--<TargetFramework >net8.0</TargetFramework>-->
+    <TargetFrameworks>net472;net8.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NET>false</NET>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(NET)' == 'true'">
+    <DefineConstants>$(DefineConstants);IsNET</DefineConstants>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+</Project>

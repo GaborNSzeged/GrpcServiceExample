@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AssemblyTitle>MbdDebugLogger</AssemblyTitle>
@@ -11,14 +11,14 @@
     <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CenterSpace.NMath.Standard.Windows.X64" Version="7.4.1.11" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <!--<PackageReference Include="CenterSpace.NMath.Standard.Windows.X64" Version="7.4.2.3" />-->
+    <!--<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />-->
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\MBD\SemiSoft\Modules\Measurement\MBDCommon\MBDCommon.csproj" />
-    <ProjectReference Include="..\..\..\..\MBD\SemiSoft\Solutions\MBD_Layering\LayeringAnalysis\LayeringAnalysis.csproj" />
-    <ProjectReference Include="..\..\..\..\MBD\SemiSoft\Solutions\MBD_Layering\MBD.DTO\MBD.DTO.csproj" />
+    <ProjectReference Include="..\..\..\..\MBD_3\Semilab.MBD\Modules\Measurement\MBDCommon\MBDCommon.csproj" />
+    <ProjectReference Include="..\..\..\..\MBD_3\Semilab.MBD\Solutions\MBD_Layering\LayeringAnalysis\LayeringAnalysis.csproj" />
+    <ProjectReference Include="..\..\..\..\MBD_3\Semilab.MBD\Solutions\MBD_Layering\MBD.DTO\MBD.DTO.csproj" />
     <ProjectReference Include="..\LoggerProxy\LoggerProxy.csproj" />
   </ItemGroup>
 </Project>

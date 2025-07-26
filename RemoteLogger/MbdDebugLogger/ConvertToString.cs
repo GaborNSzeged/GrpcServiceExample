@@ -11,50 +11,17 @@ using Semilab.SAM.MBDCommon.Classes;
 using Semilab.MBD.MBDCommon.CoreFeatures.SpectrumCalculator;
 using Semilab.MBD.MBDCommon.CoreFeatures.SectionBuilder;
 using Semilab.MBD.MBDCommon.Interfaces;
+using Semilab.MBD.SpectrumCalculatorCommon;
 
 namespace MbdDebugLogger
 {
-    public class Logger
+    public class ConvertToString
     {
         private const string DirectoryPath = @"c:\MBD_temp\LogNew";
         private static readonly Dictionary<string, int> Counter2FilePath = new Dictionary<string, int>();
 
-        public static void Print(double value, string bcdOld)
-        {
-            string filePath = Path.Combine(DirectoryPath, $"{bcdOld}.txt");
-            using (var stream = File.AppendText(filePath))
-            {
-                stream.WriteLine(value.ToString("G"));
-            }
-        }
 
-        // TODO Circular Dependency, create a proxy project which can accept object an delegate the calls to this one and the specific
-        // project can cast it to the required object.
-        //public static void Print(ISectionCard layeringStructureModel, string extraMarker)
-        //{
-        //    string ending = string.IsNullOrEmpty(extraMarker) ? string.Empty : $"_{extraMarker}";
-        //    string filePath = Path.Combine(DirectoryPath, $"SectionCard{ending}.txt");
-        //    bool appendLine = File.Exists(filePath);
-        //    int counter = GetNextCount(filePath, appendLine);
-
-        //    var sb = new StringBuilder();
-        //    sb.AppendLine($"Index: {counter}");
-        //    sb.Append("Positioning.OffsetX: ");
-        //    sb.AppendLine(layeringStructureModel.Positioning.OffsetX.EvaluatedValue.ToString("G"));
-        //    sb.Append("Parametrization.Alias: ");
-        //    sb.AppendLine(layeringStructureModel.Parametrization.Alias);
-
-        //    foreach (IEvaluatedValidableString<double> parametrizationStructureParameter in layeringStructureModel.Parametrization.StructureParameters)
-        //    {
-        //        sb.AppendLine(parametrizationStructureParameter.EvaluatedValue.ToString("G"));
-        //        sb.AppendLine(parametrizationStructureParameter.ValidableString.Name);
-        //        sb.AppendLine(parametrizationStructureParameter.ValidableString.Value);
-        //    }
-
-        //    Save(sb, filePath, appendLine);
-        //}
-
-        //public static void Print(DoubleComplexMatrix doubleComplexMatrix, string name, double waveLength, string extraMarker = "")
+        //public static string Print(DoubleComplexMatrix doubleComplexMatrix, string name, double waveLength, string extraMarker = "")
         //{
         //    string ending = string.IsNullOrEmpty(extraMarker) ? string.Empty : $"_{extraMarker}";
         //    string filePath = Path.Combine(DirectoryPath, $"DubleComplexMatrix_{name}{ending}.txt");
@@ -70,10 +37,10 @@ namespace MbdDebugLogger
         //        index++;
         //    }
 
-        //    Save(sb, filePath, appendLine);
+        //    return Save(sb, filePath, appendLine);
         //}
 
-        //public static void Print(DoubleComplexVector doubleComplexMatrix, string name, double waveLength, string extraMarker = "")
+        //public static string Print(DoubleComplexVector doubleComplexMatrix, string name, double waveLength, string extraMarker = "")
         //{
         //    string ending = string.IsNullOrEmpty(extraMarker) ? string.Empty : $"_{extraMarker}";
         //    string filePath = Path.Combine(DirectoryPath, $"DubleComplexVector_{name}{ending}.txt");
@@ -89,16 +56,26 @@ namespace MbdDebugLogger
         //        index++;
         //    }
 
-        //    Save(sb, filePath, appendLine);
+        //    return Save(sb, filePath, appendLine);
         //}
 
-        public static void Print(ISectionLayer[] sectionLayers, bool isRemote, string extraMarker = "")
+        public static string Print(ISectionLayer[] sectionLayers, string extraMarker = "")
         {
             string ending = string.IsNullOrEmpty(extraMarker) ? string.Empty : $"_{extraMarker}";
             string fileName = $"SectionLayer{ending}.txt";
             string filePath = Path.Combine(DirectoryPath, fileName);
             bool appendLine = File.Exists(filePath);
             int counter = GetNextCount(filePath, appendLine);
+
+            if (sectionLayers == null)
+            {
+                return "SectionLayers == null";
+            }
+
+            if (!sectionLayers.Any())
+            {
+                return "SectionLayers.Count == 0";
+            }
 
             int layerIndex = 0;
             var sb = new StringBuilder();
@@ -124,28 +101,17 @@ namespace MbdDebugLogger
                 }
             }
 
-            if (isRemote)
-            {
-                LoggerProxy.Proxy.Log(fileName, sb.ToString());
-            }
-            else
-            {
-                Save(sb, filePath, appendLine);
-            }
+            return Save(sb, filePath, appendLine);
         }
 
-        public static void Print(List<double> doubleComplexMatrix, string extraMarker)
+        public static string Print(List<double> doubleComplexMatrix)
         {
-            string filePath = Path.Combine(DirectoryPath, $"{extraMarker}.txt");
-            using (var stream = File.AppendText(filePath))
-            {
-                var enumerable = doubleComplexMatrix.Select(d => d.ToString("G") + " ");
-                var line = string.Join(";", enumerable);
-                stream.WriteLine(line);
-            }
+            var enumerable = doubleComplexMatrix.Select(d => d.ToString("G") + " ");
+            var line = string.Join(";", enumerable);
+            return line;
         }
 
-        public static void Print(Structure layeringStructureModel, string fileName)
+        public static string Print(Structure layeringStructureModel, string fileName)
         {
             string filePath = Path.Combine(DirectoryPath, $"{fileName}.txt");
             bool appendLine = File.Exists(filePath);
@@ -185,10 +151,10 @@ namespace MbdDebugLogger
                 //}
             }
 
-            Save(sb, filePath, appendLine);
+            return Save(sb, filePath, appendLine);
         }
 
-        public static void Print(BinarizedStructure layeringStructureModel, string extraMarker)
+        public static string Print(BinarizedStructure layeringStructureModel, string extraMarker)
         {
             string ending = string.IsNullOrEmpty(extraMarker) ? string.Empty : $"_{extraMarker}";
             string filePath = Path.Combine(DirectoryPath, $"BinarizedStructure{ending}.txt");
@@ -223,10 +189,10 @@ namespace MbdDebugLogger
                 }
             }
 
-            Save(sb, filePath, appendLine);
+            return Save(sb, filePath, appendLine);
         }
 
-        public static void Print(Dictionary<UserParameter, double> userParameters, string extraMarker = "")
+        public static string Print(Dictionary<UserParameter, double> userParameters, string extraMarker = "")
         {
             string ending = string.IsNullOrEmpty(extraMarker) ? string.Empty : $"_{extraMarker}";
             string filePath = Path.Combine(DirectoryPath, $"UserParamters{ending}.txt");
@@ -243,11 +209,16 @@ namespace MbdDebugLogger
                 sb.AppendLine(userParameter.Value.ToString("G"));
             }
 
-            Save(sb, filePath, appendLine);
+            return Save(sb, filePath, appendLine);
         }
 
-        public static void Print(ISpectrumCalculatorEvaluatedDataDto layeringStructureModel, string extraMarker)
+        public static string Print(ISpectrumCalculatorEvaluatedDataDto layeringStructureModel, string extraMarker)
         {
+            if (layeringStructureModel == null)
+            {
+                return "ISpectrumCalculatorEvaluatedDataDto was null";
+            }
+
             string ending = string.IsNullOrEmpty(extraMarker) ? string.Empty : $"_{extraMarker}";
             string filePath = Path.Combine(DirectoryPath, $"SpectrumCalculatorEvaluatedDataDto{ending}.txt");
             bool appendLine = File.Exists(filePath);
@@ -273,11 +244,23 @@ namespace MbdDebugLogger
             sb.Append("Wavelength: ");
             sb.AppendLine(line);
 
-            Save(sb, filePath, appendLine);
+            return Save(sb, filePath, appendLine);
         }
 
 
-        public static void Print(IStructureModel model, string extraMarker)
+        public static string Print(ISpectralRcwaData[] layeringStructureModel)
+        {
+            var sb = new StringBuilder();
+            foreach (ISpectralRcwaData spectralRcwaData in layeringStructureModel)
+            {
+                List<double> v = spectralRcwaData.AmbientRefractiveIndexImaginary;
+                sb.AppendLine(Print(v));
+            }
+
+            return sb.ToString();
+        }
+
+        public static string Print(IStructureModel model, string extraMarker)
         {
             string ending = string.IsNullOrEmpty(extraMarker) ? string.Empty : $"_{extraMarker}";
             string filePath = Path.Combine(DirectoryPath, $"StructureModel{ending}.txt");
@@ -343,10 +326,10 @@ namespace MbdDebugLogger
                 }
             }
 
-            Save(sb, filePath, appendLine);
+            return Save(sb, filePath, appendLine);
         }
 
-        public static void Print(Complex complex, string extraMarker)
+        public static string Print(Complex complex, string extraMarker)
         {
             string ending = string.IsNullOrEmpty(extraMarker) ? string.Empty : $"_{extraMarker}";
             string filePath = Path.Combine(DirectoryPath, $"Complex{ending}.txt");
@@ -357,32 +340,12 @@ namespace MbdDebugLogger
             sb.Append("Imag: ");
             sb.AppendLine(complex.Imaginary.ToString("G"));
 
-            Save(sb, filePath);
+            return Save(sb, filePath);
         }
 
-        private static void Save(StringBuilder sb, string filePath, bool appendLine = false)
+        private static string Save(StringBuilder sb, string filePath, bool appendLine = false)
         {
-            var directoryName =  Path.GetDirectoryName(filePath);
-            if (string.IsNullOrEmpty(directoryName))
-            {
-                // TODO log something
-                return;
-            }
-
-            if (!Directory.Exists(directoryName))
-            {
-                Directory.CreateDirectory(directoryName);
-            }
-
-            using (var stream = File.AppendText(filePath))
-            {
-                if (appendLine)
-                {
-                    stream.WriteLine();
-                }
-
-                stream.WriteLine(sb);
-            }
+            return sb.ToString();
         }
 
         private static int GetNextCount(string key, bool appendLine)

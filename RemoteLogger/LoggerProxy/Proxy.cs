@@ -16,12 +16,13 @@ namespace LoggerProxy
         private readonly bool _useRemoteLogging;
         private bool _disposedValue;
         private readonly string _processId;
-        private readonly StreamWriter _writer;
+        private StreamWriter _writer;
 
         // Replace with the actual server address.
         private const string ServerIp = "172.22.144.60:5002";
         private readonly bool _keepOrigServerIp = true;
         private static bool _isStarted;
+        private string loggerClientPath;
 
         static Proxy()
         {
@@ -43,25 +44,29 @@ namespace LoggerProxy
         {
             _useRemoteLogging = remoteLogging;
 
-            if (_useRemoteLogging)
+            loggerClientPath = UnZipLoggerClient();
+            _processId = Process.GetCurrentProcess().Id.ToString();
+            CreatePipe();
+        }
+
+        private void CreatePipe()
+        {
+            if (string.IsNullOrEmpty(loggerClientPath))
             {
-                string loggerClientPath = UnZipLoggerClient();
-                if (string.IsNullOrEmpty(loggerClientPath))
-                {
-                    return;
-                }
-
-                _processId = Process.GetCurrentProcess().Id.ToString();
-                string receiverProcessPath = loggerClientPath;
-
-                // Start the receiver process and pass the string as an argument
-                Process.Start(receiverProcessPath, _processId);
-
-                // The started client listens on this NamedPipe channel.
-                NamedPipeClientStream pipeClientStream = new NamedPipeClientStream(".", "LoggerPipe", PipeDirection.Out);
-                pipeClientStream.Connect();
-                _writer = new StreamWriter(pipeClientStream);
+                return;
             }
+
+            string receiverProcessPath = loggerClientPath;
+
+            // Start the receiver process and pass the string as an argument
+            Process.Start(receiverProcessPath, _processId);
+
+            Thread.Sleep(3000);
+
+            // The started client listens on this NamedPipe channel.
+            NamedPipeClientStream pipeClientStream = new NamedPipeClientStream(".", "LoggerPipe", PipeDirection.Out);
+            pipeClientStream.Connect();
+            _writer = new StreamWriter(pipeClientStream);
         }
 
         private string UnZipLoggerClient()
@@ -115,6 +120,11 @@ namespace LoggerProxy
         {
             if (_useRemoteLogging)
             {
+                if (_writer == null)
+                {
+                    CreatePipe();
+                }
+
                 if (_writer != null)
                 {
                     _writer.WriteLine(_processId);
@@ -131,12 +141,16 @@ namespace LoggerProxy
 
         protected virtual void Dispose(bool disposing)
         {
+            Console.WriteLine("Proxy is disposed");
+            Console.ReadLine();
+
             if (!_disposedValue)
             {
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects)
                     _writer?.Close();
+                    _writer = null;
                     // _pipeClientStream?.Dispose();
                 }
 
