@@ -1,4 +1,5 @@
 ﻿using ConsoleApp1;
+using System.Diagnostics.Metrics;
 
 namespace LoggerClient
 {
@@ -12,10 +13,17 @@ namespace LoggerClient
             _communication = new Communication(new Settings());
         }
 
-        public void SendContent(string fileName, string content)
+        private int _sendCounter;
+        public async void SendContent(string fileName, string content)
         {
-            _communication.SendContent(fileName, content);
+            Interlocked.Increment(ref _sendCounter);
+            await _communication.SendContent(fileName, content);
+            Interlocked.Decrement(ref _sendCounter);
         }
+
+        public bool AreAllMessagesSent => _sendCounter == 0;
+
+        public int WaitingResponseCounter => _sendCounter;
 
         public void Dispose()
         {

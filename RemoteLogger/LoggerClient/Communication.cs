@@ -33,7 +33,7 @@ namespace ConsoleApp1
             _settings = settings;
         }
 
-        public async void SendContent(string fileName, string longText)
+        public async Task SendContent(string fileName, string longText)
         {
             var request = new SendContentRequest
             {

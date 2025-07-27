@@ -21,7 +21,7 @@ TimeStamp</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>400</x>
+      <x>380</x>
       <y>360</y>
       <w>100</w>
       <h>50</h>
@@ -38,7 +38,7 @@ bg=orange</panel_attributes>
       <x>1080</x>
       <y>360</y>
       <w>130</w>
-      <h>50</h>
+      <h>70</h>
     </coordinates>
     <panel_attributes>LoggerServer
 --
@@ -62,13 +62,13 @@ IsRemote</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>490</x>
+      <x>470</x>
       <y>360</y>
-      <w>50</w>
+      <w>70</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>30.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>50.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -188,55 +188,44 @@ gRPC</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>240</x>
-      <y>370</y>
-      <w>180</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;-
-Log(name, content)</panel_attributes>
-    <additional_attributes>160.0;20.0;10.0;20.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
       <x>220</x>
       <y>280</y>
-      <w>200</w>
+      <w>180</w>
       <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
-Log(name, content)</panel_attributes>
-    <additional_attributes>180.0;90.0;10.0;10.0</additional_attributes>
+Log(name, content)
+</panel_attributes>
+    <additional_attributes>160.0;90.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>240</x>
       <y>400</y>
-      <w>180</w>
+      <w>160</w>
       <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 Log(name, content)</panel_attributes>
-    <additional_attributes>160.0;10.0;10.0;90.0</additional_attributes>
+    <additional_attributes>140.0;10.0;10.0;90.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>1120</x>
-      <y>400</y>
+      <y>420</y>
       <w>30</w>
-      <h>60</h>
+      <h>70</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
       <x>1080</x>
-      <y>440</y>
+      <y>470</y>
       <w>100</w>
       <h>40</h>
     </coordinates>
@@ -249,9 +238,9 @@ type=sender</panel_attributes>
     <id>UMLGeneric</id>
     <coordinates>
       <x>20</x>
-      <y>20</y>
+      <y>30</y>
       <w>940</w>
-      <h>620</h>
+      <h>740</h>
     </coordinates>
     <panel_attributes>symbol=component
 Build Server</panel_attributes>
@@ -263,7 +252,7 @@ Build Server</panel_attributes>
       <x>980</x>
       <y>20</y>
       <w>310</w>
-      <h>620</h>
+      <h>700</h>
     </coordinates>
     <panel_attributes>symbol=component
 My PC</panel_attributes>
@@ -334,12 +323,12 @@ Log(name, object, ParsingInfo)</panel_attributes>
     <coordinates>
       <x>220</x>
       <y>130</y>
-      <w>280</w>
+      <w>270</w>
       <h>250</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 Log(name, content)</panel_attributes>
-    <additional_attributes>180.0;230.0;110.0;90.0;10.0;10.0</additional_attributes>
+    <additional_attributes>160.0;230.0;110.0;90.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -369,7 +358,7 @@ NamedPipe</panel_attributes>
     <id>UMLNote</id>
     <coordinates>
       <x>1000</x>
-      <y>490</y>
+      <y>530</y>
       <w>270</w>
       <h>140</h>
     </coordinates>
@@ -405,7 +394,7 @@ NamedPipe</panel_attributes>
     <panel_attributes>LoggerClientConfig.json
 
 "Server":
-  "Address": "https://192.168.0.17:5001"
+  "Address": "https://localhost:5001"
 "LoggerConfig": 
   "ClientName": "Agent1"
 bg=light_gray</panel_attributes>
@@ -414,9 +403,9 @@ bg=light_gray</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1030</x>
+      <x>1000</x>
       <y>140</y>
-      <w>230</w>
+      <w>260</w>
       <h>110</h>
     </coordinates>
     <panel_attributes>appsettings.json
@@ -424,7 +413,7 @@ bg=light_gray</panel_attributes>
 "Https": 
   "Url": "https://0.0.0.0:5001"
 "LoggerConfig":
-  "LogFilesDirectory": "c:/Logs"
+  "LogFilesDirectory": "c:/RemoteLogs"
 bg=light_gray</panel_attributes>
     <additional_attributes/>
   </element>
@@ -453,14 +442,14 @@ bg=light_gray</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>450</x>
+      <x>430</x>
       <y>400</y>
-      <w>90</w>
+      <w>100</w>
       <h>140</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 Resource</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
+    <additional_attributes>10.0;10.0;30.0;120.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -473,5 +462,79 @@ Resource</panel_attributes>
     <panel_attributes>lt=&lt;-
 Up Pack</panel_attributes>
     <additional_attributes>260.0;10.0;260.0;100.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>420</x>
+      <y>160</y>
+      <w>250</w>
+      <h>220</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+Update server address</panel_attributes>
+    <additional_attributes>230.0;20.0;30.0;20.0;10.0;200.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>430</x>
+      <y>640</y>
+      <w>100</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>LoggerClient
+bg=orange
+--
+net8</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>380</y>
+      <w>580</w>
+      <h>290</h>
+    </coordinates>
+    <panel_attributes>lt=[&lt;]-[&gt;]
+gRPC</panel_attributes>
+    <additional_attributes>10.0;270.0;320.0;270.0;560.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>220</x>
+      <y>390</y>
+      <w>260</w>
+      <h>280</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+SendContent(name, content)</panel_attributes>
+    <additional_attributes>210.0;260.0;110.0;210.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>90</x>
+      <y>380</y>
+      <w>140</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>BusinessObject
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>240</x>
+      <y>370</y>
+      <w>160</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+Log(name, content)</panel_attributes>
+    <additional_attributes>140.0;20.0;10.0;20.0</additional_attributes>
   </element>
 </diagram>

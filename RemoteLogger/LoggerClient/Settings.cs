@@ -43,7 +43,7 @@ namespace LoggerClient
 
             if (string.IsNullOrEmpty(address))
             {
-                throw new ArgumentNullException("Server address is missing from config.json");
+                throw new ArgumentNullException("Server address is missing from LoggerClientConfig.json");
             }
 
             return address;

@@ -3,7 +3,8 @@
     "ClientName": "Agent1"
   },
   "Server": {
-    "Address": "https://192.168.0.17:5001"
+    "Address": "https://localhost:5001"
   }
 }
+//"Address": "https://192.168.0.17:5001,,
 

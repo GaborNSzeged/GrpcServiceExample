@@ -3,17 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerProxy", "..\LoggerProxy\LoggerProxy.csproj", "{E0243E8A-D4C7-5C41-DE50-940D46FE9B24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerProxy", "..\LoggerProxy\LoggerProxy.csproj", "{E0243E8A-D4C7-5C41-DE50-940D46FE9B24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerClient", "..\LoggerClient\LoggerClient.csproj", "{E062C331-EF86-A43E-3C85-3E0CCF6F378F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerClient", "..\LoggerClient\LoggerClient.csproj", "{E062C331-EF86-A43E-3C85-3E0CCF6F378F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleAppFramework", "..\ConsoleAppFramework\ConsoleAppFramework.csproj", "{96E55DDF-BA91-C3F4-C5E0-0EFC05C630F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleAppFramework", "..\ConsoleAppFramework\ConsoleAppFramework.csproj", "{96E55DDF-BA91-C3F4-C5E0-0EFC05C630F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerServer", "..\LoggerServer\LoggerServer.csproj", "{08329B6A-7CC0-085D-5FB4-955B1076BE04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerServer", "..\LoggerServer\LoggerServer.csproj", "{08329B6A-7CC0-085D-5FB4-955B1076BE04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalObjectLogger", "LocalObjectLogger\LocalObjectLogger.csproj", "{97062E14-84FE-4B4B-9742-4F65674B40DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalObjectLogger", "LocalObjectLogger\LocalObjectLogger.csproj", "{97062E14-84FE-4B4B-9742-4F65674B40DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMathUnitTest", "NMathUnitTest\NMathUnitTest.csproj", "{D26AC007-1645-4FED-8460-A2F94A5C11CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NMathUnitTest", "NMathUnitTest\NMathUnitTest.csproj", "{D26AC007-1645-4FED-8460-A2F94A5C11CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleAppNet8", "..\ConsoleAppNet8\ConsoleAppNet8.csproj", "{201E204D-F4CC-470D-A616-ADEC6AC84E8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{D26AC007-1645-4FED-8460-A2F94A5C11CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D26AC007-1645-4FED-8460-A2F94A5C11CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D26AC007-1645-4FED-8460-A2F94A5C11CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{201E204D-F4CC-470D-A616-ADEC6AC84E8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{201E204D-F4CC-470D-A616-ADEC6AC84E8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{201E204D-F4CC-470D-A616-ADEC6AC84E8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{201E204D-F4CC-470D-A616-ADEC6AC84E8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
