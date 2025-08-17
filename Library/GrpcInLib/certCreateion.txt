@@ -1,0 +1,25 @@
+﻿# Step 1: Create the directory
+$certPath = "C:\certs"
+New-Item -ItemType Directory -Path $certPath -Force
+
+# Step 2: Define certificate parameters
+$certName = "CN=MyTestCert"
+$pfxPassword = ConvertTo-SecureString -String "P@ssw0rd!" -Force -AsPlainText
+$pfxFile = Join-Path $certPath "MyTestCert.pfx"
+
+# Step 3: Create a self-signed certificate
+$cert = New-SelfSignedCertificate `
+    -Subject $certName `
+    -CertStoreLocation "Cert:\LocalMachine\My" `
+    -KeyExportPolicy Exportable `
+    -KeySpec Signature `
+    -NotAfter (Get-Date).AddYears(1)
+
+# Step 4: Export the certificate to a .pfx file
+Export-PfxCertificate `
+    -Cert $cert `
+    -FilePath $pfxFile `
+    -Password $pfxPassword
+
+# Step 5: Confirm success
+Write-Host "Certificate created and exported to $pfxFile"

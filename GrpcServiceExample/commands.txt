@@ -1,0 +1,2 @@
+You can also test the HTTPS endpoint using curl:
+C:\Users\GaborN>curl -k https://localhost:5553
