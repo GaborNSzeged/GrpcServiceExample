@@ -1,0 +1,122 @@
+syntax = "proto3";
+package com.MBDCalculatorService.grpc;
+
+option csharp_namespace = "Semilab.MBD.MBDCommunication.Google.Protobuf.MBDCalculator";
+
+service MbdRcwaCalculatorService 
+{
+    rpc FullSpectrumCalculation(FullSpectrumCalculationRequest) returns (FullSpectrumCalculationResult) {}
+    rpc GetParameters(GetParametersRequest) returns (GetParametersResult) {}
+    rpc SetParameters(SetParametersRequest) returns (SetParametersResult) {}
+}
+
+message FullSpectrumCalculationRequest
+{
+    double wavelengths_resolution = 1;
+    int32 fit_resolution = 2;
+    bool use_measurement_wavelength = 3;
+    int32 minimum_wavelength = 4;
+    int32 maximum_wavelength = 5;
+    double angle_of_incidence = 6;
+    double angle_of_incidence_shift = 7;
+    double azimuthal_angle_of_incidence = 8;
+    int32 number_of_orders = 9;
+    MeasurementMethodGrpcType measurement_method = 10;
+}
+
+enum MeasurementMethodGrpcType {
+    NONE = 0;
+    ELLIPSOMETRY = 1;
+    REFLECTOMETRY_RP_RS = 2;
+    REFLECTOMETRY_UNPOLARIZED = 3;
+    JONES_MATRIX = 4;
+    MUELLER_MATRIX = 5;
+}
+
+message FullSpectrumCalculationResult
+{
+    repeated RcwaSingleWavelengthFieldResultProto rcwa_single_wavelength_field_result = 1;
+}
+
+message GetParametersRequest
+{
+}
+
+message GetParametersResult
+{
+    repeated ParameterItem parameters = 1;
+}   
+
+message ParameterItem
+{
+    string name = 1;
+    double value = 2;
+}
+
+message SetParametersRequest
+{
+   repeated ParameterItem parameters = 1;
+}
+
+message SetParametersResult
+{
+    repeated string errors = 1;
+}
+
+// ------- Parts of CalculationRequest -------
+
+message SpectralDataRequest
+{
+    double period = 1;
+    double wavelength = 2;
+    double angle_of_incidence = 3;
+    double azimuthal_angle_of_incidence = 4;
+    int32 number_of_orders = 5;
+    double ambient_refractive_index_real = 6;
+    double ambient_refractive_index_imaginary = 7;
+    double substrate_refractive_index_real = 8;
+    double substrate_refractive_index_imaginary = 9;
+    repeated SingleWavelengthSectionLayerRequest section_layers = 10;
+}
+
+message SingleWavelengthSectionLayerRequest
+{
+    repeated SingleWavelengthLayerCellRequest layer_cells = 1;
+    double thickness = 2;
+}
+
+message SingleWavelengthLayerCellRequest
+{
+    double n_layer_real = 1;
+    double n_layer_imaginary = 2;
+    double start_x = 3;
+    double end_x = 4;
+}
+
+// ------- Parts of CalculationResult -------
+
+message RcwaSingleWavelengthFieldResultProto
+{
+    double wavelength = 1;
+    repeated SingleWavelengthSingleOrderResultProto single_wavelength_single_order_result = 2;
+}
+
+message SingleWavelengthSingleOrderResultProto
+{
+    int32 order = 1;
+    SingleWavelengthReflectedFieldResultProto single_wavelength_reflected_field_result = 2;
+}
+
+message SingleWavelengthReflectedFieldResultProto
+{
+    double reflected_field_p_real = 1;
+    double reflected_field_p_imaginary = 2;
+    double reflected_field_s_real = 3;
+    double reflected_field_s_imaginary = 4;
+    double reflected_field_ps_real = 5;
+    double reflected_field_ps_imaginary = 6;
+    double reflected_field_sp_real = 7;
+    double reflected_field_sp_imaginary = 8;
+    double reflected_diffraction_efficiency_p = 9;
+    double reflected_diffraction_efficiency_s = 10;
+}

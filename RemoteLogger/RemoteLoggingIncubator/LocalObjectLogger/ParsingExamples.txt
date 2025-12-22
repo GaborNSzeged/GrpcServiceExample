@@ -1,0 +1,23 @@
+ StringBuilder sb = new();
+ foreach (ISingleWavelengthFieldResult item in spectralResult)
+ {
+     var v = item as RcwaSingleWavelengthFieldResult;
+     if (v == null)
+     {
+         continue;
+     }
+
+     double wavelength = v.Wavelength;
+     sb.AppendLine(wavelength.ToString("G17"));
+     var orderResult = v.OrderResult;
+     sb.AppendLine(orderResult.Order.ToString());
+
+     var singleResult = orderResult.SingleWavelengthFieldResult;
+     sb.AppendLine(singleResult.ReflectedFieldS.ToString("G17"));
+     sb.AppendLine(singleResult.ReflectedFieldSP.ToString("G17"));
+     
+     sb.AppendLine(singleResult.ReflectedFieldP.ToString("G17"));
+     sb.AppendLine(singleResult.ReflectedFieldPS.ToString("G17"));
+ }
+
+ ObjectSerializer.WriteToFileStartWithIndexTxt("spectralResult", sb.ToString());

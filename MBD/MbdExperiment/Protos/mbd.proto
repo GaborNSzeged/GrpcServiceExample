@@ -1,0 +1,13 @@
+﻿syntax = "proto3";
+package MBD;
+
+option csharp_namespace = "Google.Protobuf.MBD";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+service MBDService 
+{
+	rpc AttachSessionFromFile(google.protobuf.StringValue) returns (google.protobuf.Empty) {}
+	rpc AttachSessionFromStream(google.protobuf.BytesValue) returns (google.protobuf.Empty) {}
+}
